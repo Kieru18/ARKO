@@ -1,0 +1,39 @@
+1A
+Proszę napisać funkcję replace zastępującą małe litery znakiem '*'. 
+replace zwraca liczbę wykonanych zamian znaków.
+
+Input string      > Wind On The Hill
+Return value      > 9
+Conversion results> W*** O* T** H***
+
+1B
+Proszę napisać funkcję replace zastępującą wielkie litery znakiem '*'. 
+replace zwraca liczbę wykonanych zamian znaków.
+
+Input string      > Wind On The Hill
+Return value      > 4
+Conversion results> *ind *n *he *ill
+
+1C
+Proszę napisać funkcję replace zastępującą cyfry znakiem '*'. 
+replace zwraca liczbę wykonanych zamian znaków.
+
+Input string      > tel. 12-34-55
+Return value      > 6
+Conversion results> tel. **-**-**
+
+2A
+Proszę napisać funkcję reverse odwracającą kolejność znaków w ciągu. 
+reverse zwraca długość ciągu znaków.
+
+Input string      > Wind On The Hill
+Return value      > 16
+Conversion results> lliH ehT nO dniW
+
+3A
+Proszę napisać funkcję remove usuwającą z ciągu znaków małe litery. 
+remove zwraca długość wynikowego ciągu znaków.
+
+Input string      > Flip, Flop & Fly
+Return value      > 8
+Conversion results> F, F & F
