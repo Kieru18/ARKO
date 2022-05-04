@@ -3,12 +3,11 @@
 # left square bracket ([) and the first following it occurrence of right square bracket (]). remove returns the
 # length of the resulting string. 
 
-# solutions requires correct string (not including both brackets results in wrong return value)
 
 .data
 text_test:		.asciz	"Il ][ barbiere ][ di Siviglia"
 text_test2:	.asciz	"aaaB[BBaK;'91)a"
-text_test3:	.asciz	"askdjnalsjndalksndl] ] ] ]] ] "
+text_test3:	.asciz	"askl]] ] "
 
 text_input:	.asciz	"\nSource			> "
 text_return:	.asciz	"\nReturn value		> "
@@ -48,10 +47,11 @@ remove:
 	li	t0,	'['
 	li	t1,	']'
 	mv	t6,	a0
+	mv	t5,	zero
 
 find_left:
 	lbu	t2,	(a0)	
-	beqz	t2,	exit
+	beqz	t2,	len
 	addi	a0,	a0,	1
 	mv	t3,	a0
 	beq	t2,	t0,	find_right
@@ -60,7 +60,7 @@ find_left:
 find_right:
 	lbu	t4,	(t3)
 	addi	t3,	t3,	1
-	beqz	t4,	exit
+	beqz	t4,	len
 	beq	t4,	t1,	replace
 	j	find_right
 
@@ -68,15 +68,21 @@ replace:
 	sb	t4,	(a0)
 	sb	t0,	(t3)
 	
-	beqz	t4,	exit
+	beqz	t4,	len
 	
 	addi	a0,	a0,	1
 	addi	t3,	t3,	1
 	lbu	t4,	(t3)
 	j	replace
 
+len:
+	lbu	t0,	(t6)
+	addi	t5,	t5,	1
+	beqz	t0,	exit
+	addi	t6,	t6,	1
+	j	len
 
 exit:
-	sub	a0,	a0,	t6
+	mv a0,	t5
 	ret
 	
