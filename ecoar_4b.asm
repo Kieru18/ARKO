@@ -1,9 +1,8 @@
-# 4b
-# The first and the second character in the string represent the (begin and the end) markers, which define a
-# substring. Your task is to replace all characters between the first occurrence of begin marker and first
-# occurcence of the end marker with * character. If there is no begin or end marker in the input string (the string
-# after the : character), then nothing should be changed. Replace the first three characters of the string with
-# spaces.
+#4b
+#The first and the second character in the string represent the (begin and the end) markers, which define a
+#substring. Your task is to replace all characters before the first occurrence of begin marker and first occurcence
+#of the end marker with * character. If there is no begin or end marker in the input string (the string after the :
+#character), then nothing should be changed. Replace the first three characters of the string with spaces. 
 
 
 .data
@@ -20,7 +19,7 @@ main:
 	li	a7,	4
 	la	a0,	text_input
 	ecall
-	la	a0,	text_test3
+	la	a0,	text_test
 	ecall
 	
 	# text_test already in a0
@@ -28,7 +27,7 @@ main:
 	
 	la	a0,	text_results
 	ecall
-	la	a0,	text_test3
+	la	a0,	text_test
 	ecall
 	
 	li	a7,	10

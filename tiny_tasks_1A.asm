@@ -5,6 +5,7 @@
 .data
 text_test:		.asciz	"Wind On The Hill"
 text_test2:	.asciz	"aaaBBBaK;'91)a"
+text_test0:	.string	"10\0"
 
 text_input:	.asciz	"\nInput string		> "
 text_return:	.asciz	"\nReturn value		> "
@@ -15,7 +16,7 @@ main:
 	li	a7,	4
 	la	a0,	text_input
 	ecall
-	la	a0,	text_test
+	la	a0,	text_test0
 	ecall
 	
 	# text_test already in a0
@@ -34,7 +35,7 @@ main:
 	li	a7,	4
 	la	a0,	text_results
 	ecall
-	la	a0,	text_test
+	la	a0,	text_test0
 	ecall
 	
 	li	a7,	10

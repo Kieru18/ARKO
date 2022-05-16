@@ -54,8 +54,7 @@ find_left:
 	beqz	t2,	len
 	addi	a0,	a0,	1
 	mv	t3,	a0
-	beq	t2,	t0,	find_right
-	j	find_left
+	bne	t2,	t0,	find_left
 
 find_right:
 	lbu	t4,	(t3)
