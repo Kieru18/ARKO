@@ -33,12 +33,12 @@
 	
 	.align 2		# wyrownanie do granicy slowa
 	dummy:		.space	2
-	bmpHeader:	.space	BMPHeader_Size
+	bmpHeader:	.space	BMPHeader_Size 
 
 	.align 2
 	imgData: 	.space	MAX_IMG_SIZE
 
-	ifname: 	.asciz	"D:/studia/sem2/arko/risc-v/turtle2.bin"
+	ifname: 	.asciz	"D:/studia/sem2/arko/risc-v/turtle.bin"
 	ofname:	.asciz	"D:/studia/sem2/arko/risc-v/turtle2.bmp"
 	base:		.asciz	"D:/studia/sem2/arko/risc-v/base.bmp"
 	err_msg: 	.asciz	"Error reading the file."
@@ -51,6 +51,7 @@
 	green:	.asciz	"\ngreen = "
 	blue:		.asciz	"\nblue = "
 	rotation:	.asciz	"\nrotation = "
+	space:	.asciz	"    "
 	
 	.align 3
 	buffer:	.space	512
@@ -69,31 +70,43 @@
   	ecall
   	
   	mv	s1,	a0		# save the length
-  	addi	s1,	s1,	1
   	
   	li	a7,	57		# system call for close file
   	mv	a0,	s6		# file descriptor to close
  	ecall
   	
 check_for_error:
-	beqz	s1,	error
-	la	s2,	buffer
+	addi	s1,	s1,	1
+	beqz	s1,	error	# if returned length = -1, error has ocurred
+	la	s2,	buffer	# load adress of the instruction data into s2
 	addi	s1,	s1,	-1
 
 read_loop:
   	beqz	s1,	exit
   	
-read_instruction:	
-  	lbu	t0,	1(s2)
-  	andi	t3,	t0,	3	# get the command code
+read_instruction:
+    	#lhu	t0,	(s2)
+    	
+  	#mv	a0,	t0
+  	#i	a7,	34
+	#ecall
+	#la	a0,	space
+	#li	a7,	4
+	#ecall
+	#addi	s1,	s1,	-2
+	#addi	s2,	s2,	2
+	#j	read_loop
+
+  	lbu	t0,	(s2)
+  	srai	t3,	t0,	6			# get the command code
 
  	beqz	t3,	set_position_args	# command code == 0
  	
  	addi	t3,	t3,	-1
- 	beqz	t3,	move_args		# command code == 1
+ 	beqz	t3,	set_direction_args	# command code == 1
  	
  	addi	t3,	t3,	-1
- 	beqz	t3,	set_direction_args	# command code == 2
+ 	beqz	t3,	move_args		# command code == 2
  	
  	addi	t3,	t3,	-1
  	beqz	t3,	set_pen_state_args	# command code == 3
@@ -134,7 +147,7 @@ move_args:
 	la	a0,	endl
   	li	a7,	4
   	ecall
-	li	a0,	1
+	li	a0,	2
 	li	a7,	1
   	ecall
   	
@@ -160,7 +173,7 @@ set_direction_args:
 	la	a0,	endl
   	li	a7,	4
   	ecall
-	li	a0,	2
+	li	a0,	1
 	li	a7,	1
   	ecall
   	
@@ -171,7 +184,7 @@ set_direction_args:
   	li	a7,	4
   	ecall
   	mv	a0,	t1
-  	li	a7,	1
+  	li	a7,	35
   	ecall
   	
   	addi	s2,	s2,	2
@@ -226,9 +239,9 @@ set_pen_state_args:
  	j	read_loop
 
 error:
-	li	a7,	4
-	la	a0,	err_msg
-	ecall
+ 	li	a7,	4
+ 	la	a0,	err_msg
+	ecall 
 
 exit:
 	li	a7,	10
