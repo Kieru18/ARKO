@@ -85,18 +85,6 @@ read_loop:
   	beqz	s1,	exit
   	
 read_instruction:
-    	#lhu	t0,	(s2)
-    	
-  	#mv	a0,	t0
-  	#i	a7,	34
-	#ecall
-	#la	a0,	space
-	#li	a7,	4
-	#ecall
-	#addi	s1,	s1,	-2
-	#addi	s2,	s2,	2
-	#j	read_loop
-
   	lbu	t0,	(s2)
   	srai	t3,	t0,	6			# get the command code
 
@@ -120,12 +108,13 @@ set_position_args:
   	ecall
   	
   	addi	s2,	s2,	2	# go to second word of set_position command
-  	lbu	t0,	1(s2)
-  	andi	t2,	t0,	63
-  	srli	t0,	t0,	6
-  	lbu	t1,	(s2)
-  	slli	t1,	t1,	2
-  	add	t1,	t1,	t0
+  	lbu	t0,	(s2)
+  	srai	t2,	t0,	2	# get y value
+  	andi	t0,	t0,	3
+  	slli	t0,	t0,	8
+  	lbu	t1,	1(s2)
+  	add	t1,	t1,	t0	# get x value
+
   	addi	s2,	s2,	2
   	addi	s1,	s1,	-4
   	
@@ -143,32 +132,6 @@ set_position_args:
   	ecall
   	j	read_loop
 
-move_args:
-	la	a0,	endl
-  	li	a7,	4
-  	ecall
-	li	a0,	2
-	li	a7,	1
-  	ecall
-  	
-  	lbu	t0,	1(s2)
-  	andi	t2,	t0,	63
-  	srli	t0,	t0,	6
-  	lbu	t1,	(s2)
-  	slli	t1,	t1,	2
-  	add	t1,	t1,	t0
-  	
-  	la	a0,	distance
-  	li	a7,	4
-  	ecall
-  	mv	a0,	t1
-  	li	a7,	1
-  	ecall
-  	
-  	addi	s2,	s2,	2
-  	addi	s1,	s1,	-2
-  	j	read_loop
-  	
 set_direction_args:
 	la	a0,	endl
   	li	a7,	4
@@ -177,8 +140,8 @@ set_direction_args:
 	li	a7,	1
   	ecall
   	
-	lbu	t1,	(s2)
-	srli	t1,	t1,	6
+	lbu	t1,	1(s2)
+	andi	t1,	t1,	3
 	
 	la	a0,	rotation
   	li	a7,	4
@@ -191,6 +154,32 @@ set_direction_args:
   	addi	s1,	s1,	-2
   	j	read_loop
 
+move_args:
+	la	a0,	endl
+  	li	a7,	4
+  	ecall
+	li	a0,	2
+	li	a7,	1
+  	ecall
+  	
+  	lbu	t0,	(s2)
+  	andi	t0,	t0,	3
+  	slli	t0,	t0,	8
+  	lbu	t1,	1(s2)
+  	add	t1,	t1,	t0	# get d value
+  	
+  	la	a0,	distance
+  	li	a7,	4
+  	ecall
+  	mv	a0,	t1
+  	li	a7,	1
+  	ecall
+  	
+  	addi	s2,	s2,	2
+  	addi	s1,	s1,	-2
+  	j	read_loop
+  	
+
 set_pen_state_args:
 	la	a0,	endl
   	li	a7,	4
@@ -199,15 +188,15 @@ set_pen_state_args:
 	li	a7,	1
   	ecall
   	
-  	lbu	t5,	(s2)
-  	lbu	t4,	1(s2)
-  	
-  	andi	t1,	t4,	4
-  	srli	t1,	t1,	2
-  	andi	t4,	t4,	240
-  	andi	t2,	t5,	240
-  	andi	t3,	t5,	15
-  	slli	t3,	t3,	4
+  	lbu	t1,	(s2)
+  	slli	t4,	t1,	4		
+  	andi	t4,	t4,	240		# get the b value
+  	srli	t1,	t1,	5
+  	andi	t1,	t1,	1		# get the ud value
+  	lbu	t2,	1(s2)
+  	andi	t3,	t2,	240		# get the g value
+  	andi	t2,	t2,	15
+  	slli	t2,	t2,	4		# get the r value
   	
   	la	a0,	pen
   	li	a7,	4
