@@ -42,16 +42,6 @@
 	ofname:	.asciz	"D:/studia/sem2/arko/risc-v/turtle2.bmp"
 	base:		.asciz	"D:/studia/sem2/arko/risc-v/base.bmp"
 	err_msg: 	.asciz	"Error reading the file."
-	endl:		.asciz	"\n "
-	x:		.asciz	"\nx = "
-	y:		.asciz	"\ny = "
-	distance:	.string	"\ndistance = "
-	pen:		.asciz	"\npen state = "
-	red:		.asciz	"\nred = "
-	green:	.asciz	"\ngreen = "
-	blue:		.asciz	"\nblue = "
-	rotation:	.asciz	"\nrotation = "
-	space:	.asciz	"    "
 	
 	.align 3
 	buffer:	.space	512
@@ -113,13 +103,6 @@ read_instruction:
  	beqz	t3,	set_pen_state		# command code == 3
 
 set_position:
-  	la	a0,	endl
-  	li	a7,	4
-  	ecall
-  	li	a0,	0
-  	li	a7,	1
-  	ecall
-  	
   	addi	s2,	s2,	2	# go to second word of set_position command
   	lbu	t0,	(s2)
   	srai	t2,	t0,	2	# get y value
@@ -131,41 +114,14 @@ set_position:
   	addi	s2,	s2,	2
   	addi	s1,	s1,	-4
   	
-  	la	a0,	x
-  	li	a7,	4
-  	ecall
-  	mv	a0,	t1
-  	li	a7,	1
-  	ecall
-  	la	a0,	y
-  	li	a7,	4
-  	ecall
-  	mv	a0,	t2
-  	li	a7,	1
-  	ecall
-  	
   	mv	s9,	t1
   	mv	s10,	t2
   	j	read_loop
 
-set_direction:
-	la	a0,	endl
-  	li	a7,	4
-  	ecall
-	li	a0,	1
-	li	a7,	1
-  	ecall
-  	
+set_direction:  	
 	lbu	t1,	1(s2)
 	andi	t1,	t1,	3
 	
-	la	a0,	rotation
-  	li	a7,	4
-  	ecall
-  	mv	a0,	t1
-  	li	a7,	35
-  	ecall
-  	
   	mv	s7,	t1
   	
   	addi	s2,	s2,	2
@@ -173,25 +129,11 @@ set_direction:
   	j	read_loop
 
 move_args:
-	la	a0,	endl
-  	li	a7,	4
-  	ecall
-	li	a0,	2
-	li	a7,	1
-  	ecall
-  	
   	lbu	t0,	(s2)
   	andi	t0,	t0,	3
   	slli	t0,	t0,	8
   	lbu	t1,	1(s2)
   	add	t1,	t1,	t0	# get d value
-  	
-  	la	a0,	distance
-  	li	a7,	4
-  	ecall
-  	mv	a0,	t1
-  	li	a7,	1
-  	ecall
   	
   	addi	s2,	s2,	2
   	addi	s1,	s1,	-2
@@ -199,13 +141,6 @@ move_args:
   	
 
 set_pen_state:
-	la	a0,	endl
-  	li	a7,	4
-  	ecall
-	li	a0,	3
-	li	a7,	1
-  	ecall
-  	
   	lbu	t1,	(s2)
   	slli	t4,	t1,	4		
   	andi	t4,	t4,	240		# get the b value
@@ -215,31 +150,6 @@ set_pen_state:
   	andi	t3,	t2,	240		# get the g value
   	andi	t2,	t2,	15
   	slli	t2,	t2,	4		# get the r value
-  	
-  	la	a0,	pen
-  	li	a7,	4
-  	ecall
-  	mv	a0,	t1
-  	li	a7,	1
-  	ecall
-  	la	a0,	red
-  	li	a7,	4
-  	ecall
-  	mv	a0,	t2
-  	li	a7,	1
-  	ecall
-  	la	a0,	green
-  	li	a7,	4
-  	ecall
-  	mv	a0,	t3
-  	li	a7,	1
-  	ecall
-  	la	a0,	blue
-  	li	a7,	4
-  	ecall
-  	mv	a0,	t4
-  	li	a7,	1
-  	ecall
   	
   	mv	s4,	t2
   	mv	s5,	t3
