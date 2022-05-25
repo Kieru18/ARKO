@@ -137,8 +137,52 @@ move_args:
   	
   	addi	s2,	s2,	2
   	addi	s1,	s1,	-2
-  	j	read_loop
   	
+  	mv	s11,	t1
+  	addi	s11,	s11,	1
+ 
+ move:
+ 	addi	s11,	s11,	-1
+ 	beqz	s11,	read_loop
+ 	beqz	s8,	move_skip
+ 	jal	set_pixel
+ move_skip:
+ 	mv	t0,	s7
+ 	beqz	t0,	go_right
+ 	addi	t0,	t0,	-1
+ 	beqz	t0,	go_up
+ 	addi	t0,	t0,	-1
+ 	beqz	t0,	go_left
+ 	addi	t0,	t0,	-1
+ 	beqz	t0,	go_down
+ 	
+ go_right:
+ 	addi	s9,	s9,	1
+ 	li	t1,	768
+ 	bleu	s9,	t1,	move
+ 	addi	s9,	s9,	-1
+ 	j	read_loop
+ 	
+ go_up:
+ 	addi	s10,	s10,	1
+ 	li	t1,	64
+ 	bleu	s10,	t1,	move
+ 	addi	s10,	s10,	-1
+ 	j	read_loop
+ 	
+ go_left:
+ 	addi	s9,	s9,	-1
+ 	li	t1,	0
+ 	bgeu	s9,	t1,	move
+ 	addi	s9,	s9,	1
+ 	j	read_loop
+ 	
+ go_down:
+ 	addi	s10,	s10,	-1
+ 	li	t1,	0
+ 	bgeu	s10,	t1,	move
+ 	addi	s10,	s10,	1
+ 	j	read_loop
 
 set_pen_state:
   	lbu	t1,	(s2)
