@@ -1,14 +1,14 @@
 #-------------------------------------------------------------------------------
-#author: Jakub Kieruczenko
-#date : 2022.05.23
-#description : turtle ver2 project 
+# author: Jakub Kieruczenko
+# date : 2022.05.23
+# description : Turtle graphics version 2.
 #-------------------------------------------------------------------------------
 #	struct {
-#		char* filename;		// wskazanie na nazwe pliku
-#		unsigned char* hdrData; // wskazanie na bufor naglowka pliku BMP
-#		unsigned char* imgData; // wskazanie na pierwszy piksel obrazu w pamieci
-#		int width, height;	// szerokosc i wysokosc obrazu w pikselach
-#		int linebytes;		// rozmiar linii (wiersza) obrazu w bajtach
+#		char* filename;			// pointer to name of the file
+#		unsigned char* hdrData; 	// pointer to buffer of header of BMP file
+#		unsigned char* imgData; 	// pointer to first pixel of the image in memory
+#		int width, height;		// width and height of the image in pixels
+#		int linebytes;			// size of a line of the image in bytes
 #	} imgInfo;
 
 .eqv ImgInfo_fname	0
@@ -29,18 +29,18 @@
 .eqv system_CloseFile	57
 
 .data
-	imgInfo: .space	24	# deskryptor obrazu
+	imgInfo: .space	24	# image descriptor
 	
-	.align 2		# wyrownanie do granicy slowa
+	.align 2			# align to word
 	dummy:		.space	2
 	bmpHeader:	.space	BMPHeader_Size 
 
 	.align 2
 	imgData: 	.space	MAX_IMG_SIZE
 
-	ifname: 	.asciz	"D:/studia/sem2/arko/risc-v/turtle2.bin"
-	ofname:	.asciz	"D:/studia/sem2/arko/risc-v/turtle2.bmp"
-	base:		.asciz	"D:/studia/sem2/arko/risc-v/base.bmp"
+	ifname: 	.asciz	"D:/studia/sem2/arko/risc-v/turtle2.bin"		# input file with instructions
+	ofname:	.asciz	"D:/studia/sem2/arko/risc-v/turtle2.bmp"		# output file
+	base:		.asciz	"D:/studia/sem2/arko/risc-v/base.bmp"		# white 768x64 base.
 	err_msg: 	.asciz	"Error reading the file."
 	
 	.align 3
@@ -49,20 +49,20 @@
  
  .text
  main:
-  	li	a7,	1024		# system call for open file
+  	li	a7,	system_OpenFile	# system call for open file
   	la 	a0,	ifname
-  	li	a1,	0		# Open for writing (flags are 0: read, 1: write)
-  	ecall				# open a file (file descriptor returned in a0)
- 	mv	s6,	a0		# save the file descriptor
-  	li	a7,	63		# Read from a file descriptor into a buffer
-  	la	a1,	buffer	# address of buffer
-  	li	a2,	512		# hardcoded buffer length
+  	li	a1,	0				# Open for writing (flags are 0: read, 1: write)
+  	ecall						# open a file (file descriptor returned in a0)
+ 	mv	s6,	a0				# save the file descriptor
+  	li	a7,	system_ReadFile	# Read from a file descriptor into a buffer
+  	la	a1,	buffer			# address of buffer
+  	li	a2,	512				# hardcoded buffer length
   	ecall
   	
-  	mv	s1,	a0		# save the length
+  	mv	s1,	a0				# save the length
   	
-  	li	a7,	57		# system call for close file
-  	mv	a0,	s6		# file descriptor to close
+  	li	a7,	system_CloseFile	# system call for close file
+  	mv	a0,	s6				# file descriptor to close
  	ecall
   	
 check_for_error:
@@ -72,6 +72,7 @@ check_for_error:
 	addi	s1,	s1,	-1
 	
 open_base:
+# read the base to modify it later
 	la	a0,	imgInfo 
 	la	t0,	base
 	sw	t0,	ImgInfo_fname(a0)
@@ -85,14 +86,12 @@ open_base:
 	la	s3,	imgInfo
 
 read_loop:
-  	beqz	s1,	create_bmp
-  	
-read_instruction:
+  	beqz	s1,	create_bmp		# all instructions were read
   	lbu	t0,	(s2)
   	srai	t3,	t0,	6			# get the command code
 
  	beqz	t3,	set_position		# command code == 0
- 	
+
  	addi	t3,	t3,	-1
  	beqz	t3,	set_direction		# command code == 1
  	
@@ -120,7 +119,7 @@ set_position:
 
 set_direction:  	
 	lbu	t1,	1(s2)
-	andi	t1,	t1,	3
+	andi	t1,	t1,	3	# get direction value
 	
   	mv	s7,	t1
   	
@@ -133,7 +132,7 @@ move_args:
   	andi	t0,	t0,	3
   	slli	t0,	t0,	8
   	lbu	t1,	1(s2)
-  	add	t1,	t1,	t0	# get d value
+  	add	t1,	t1,	t0	# get distance value
   	
   	addi	s2,	s2,	2
   	addi	s1,	s1,	-2
@@ -204,7 +203,7 @@ set_pen_state:
 
 read_bmp:
 	mv	t0,	a0				# preserve imgInfo structure pointer
-	#open file
+	# open file
 	li	a7,	system_OpenFile
 	lw	a0,	ImgInfo_fname(t0)	# file name 
 	li	a1,	0				# flags: 0 - read file
@@ -213,13 +212,13 @@ read_bmp:
 	blt	a0,	zero,		rb_error
 	mv	t1,	a0				# save file descriptor
 	
-	#read header
+	# read header
 	li	a7,	system_ReadFile
 	lw	a1,	ImgInfo_hdrdat(t0)
 	li	a2,	BMPHeader_Size
 	ecall
 	
-	#extract image information from header
+	# extract image information from header
 	lw	a0,	BMPHeader_width(a1)
 	sw	a0,	ImgInfo_width(t0)
 	
@@ -234,14 +233,14 @@ read_bmp:
 	lw	a0,	BMPHeader_height(a1)
 	sw	a0,	ImgInfo_height(t0)
 
-	#read image data
+	# read image data
 	li	a7,	system_ReadFile
 	mv	a0,	t1
 	lw	a1,	ImgInfo_imdat(t0)
 	li	a2,	MAX_IMG_SIZE
 	ecall
 
-	#close file
+	# close file
 	li	a7,	system_CloseFile
 	mv	a0,	t1
    	ecall
@@ -256,22 +255,22 @@ rb_error:
 save_bmp:
 	mv	t0,	a0	# preserve imgInfo structure pointer
 	
-	#open file
+	# open file
 	li	a7,	system_OpenFile
-	lw	a0,	ImgInfo_fname(t0)		#file name 
-	li	a1,	1					#flags: 1-write file
+	lw	a0,	ImgInfo_fname(t0)		# file name 
+	li	a1,	1					# flags: 1-write file
 	ecall
 	
 	blt	a0,	zero,		error
 	mv	t1,	a0					# save file handle for the future
 	
-	#write header
+	# write header
 	li	a7,	system_WriteFile
 	lw	a1,	ImgInfo_hdrdat(t0)
 	li	a2,	BMPHeader_Size
 	ecall
 	
-	#write image data
+	# write image data
 	li	a7,	system_WriteFile
 	mv	a0,	t1
 	# compute image size (linebytes * height)
@@ -281,7 +280,7 @@ save_bmp:
 	lw	a1,	ImgInfo_imdat(t0)
 	ecall
 
-	#close file
+	# close file
 	li	a7,	system_CloseFile
 	mv	a0,	t1
 	ecall
@@ -300,10 +299,10 @@ set_pixel:
 	lw	t1,	ImgInfo_imdat(s3)	# address of image data
 	add	t0,	t0,	t1 			# t0 is address of the pixel
 	
-	#set new color
-	sb	s6,	(t0)		# store B
-	sb	s5,	1(t0)		# store G
-	sb	s4,	2(t0)		# store R
+	# set new color
+	sb	s6,	(t0)	
+	sb	s5,	1(t0)	
+	sb	s4,	2(t0)	
 	jr	ra
 
 	
