@@ -3,6 +3,16 @@
 # date : 2022.05.23
 # description : Turtle graphics version 2.
 #-------------------------------------------------------------------------------
+#	register usage:
+#	because user will not be required to use any of procedures themself, I decided to designate registers as such:
+#	s3 - ImgInfo of turtle2.bmp
+#	s4, s5, s6 - colors, respectively red, green and blue
+#	s7 - direction
+#	s8 - pen state
+#	s9, s10 - coordinates, respectively x and y
+#	program stores these values there for easier access
+#	all procedures (set_pixel, move) expect these values to be in designated registers.
+
 #	struct {
 #		char* filename;			// pointer to name of the file
 #		unsigned char* hdrData; 	// pointer to buffer of header of BMP file
@@ -284,7 +294,6 @@ save_bmp:
 	
 	mv	a0,	zero
 	jr	ra
-
 
 set_pixel:
 	lw	t1,	ImgInfo_lbytes(s3)
