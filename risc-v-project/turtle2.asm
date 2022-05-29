@@ -130,9 +130,7 @@ set_position:
 set_direction:  	
 	lbu	t1,	1(s2)
 	andi	t1,	t1,	3	# get direction value
-	
   	mv	s7,	t1
-  	
   	addi	s2,	s2,	2
   	j	read_loop
 
