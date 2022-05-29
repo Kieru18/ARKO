@@ -48,9 +48,9 @@
 	.align 2
 	imgData: 	.space	MAX_IMG_SIZE
 
-	ifname: 	.asciz	"D:/studia/sem2/arko/risc-v/turtle2.bin"		# input file with instructions
-	ofname:	.asciz	"D:/studia/sem2/arko/risc-v/turtle2.bmp"		# output file
-	base:		.asciz	"D:/studia/sem2/arko/risc-v/base.bmp"		# white 768x64 base.
+	ifname: 	.asciz	"turtle2.bin"		# input file with instructions
+	ofname:		.asciz	"turtle2.bmp"		# output file
+	base:		.asciz	"base.bmp"			# white 768x64 base.
 	err_msg: 	.asciz	"Error reading the file."
 	
 	.align 3
