@@ -159,29 +159,27 @@ move_args:
  go_right:
  	addi	s9,	s9,	1
  	li	t1,	768
- 	bleu	s9,	t1,	move
+ 	bltu	s9,	t1,	move
  	addi	s9,	s9,	-1
  	j	read_loop
  	
  go_up:
  	addi	s10,	s10,	1
  	li	t1,	64
- 	bleu	s10,	t1,	move
+ 	bltu	s10,	t1,	move
  	addi	s10,	s10,	-1
  	j	read_loop
  	
  go_left:
  	addi	s9,	s9,	-1
- 	li	t1,	0
- 	bgeu	s9,	t1,	move
- 	addi	s9,	s9,	1
+ 	bgtu	s9,	zero,	move
+ 	mv	s9,	zero
  	j	read_loop
  	
  go_down:
  	addi	s10,	s10,	-1
- 	li	t1,	0
- 	bgeu	s10,	t1,	move
- 	addi	s10,	s10,	1
+ 	bgtu	s10,	zero,	move
+	mv	s10,	zero
  	j	read_loop
 
 set_pen_state:
