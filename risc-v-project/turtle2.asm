@@ -70,6 +70,7 @@ check_for_error:
 	beqz	s1,	error	# if returned length = -1, error has ocurred
 	la	s2,	buffer	# load adress of the instruction data into s2
 	addi	s1,	s1,	-1
+	add	s1,	s1,	s2
 	
 open_base:
 # read the base to modify it later
@@ -86,7 +87,7 @@ open_base:
 	la	s3,	imgInfo
 
 read_loop:
-  	beqz	s1,	create_bmp		# all instructions were read
+	beq	s1,	s2,	create_bmp	# all instructions were read
   	lbu	t0,	(s2)
   	srai	t3,	t0,	6			# get the command code
 
@@ -111,7 +112,6 @@ set_position:
   	add	t1,	t1,	t0	# get x value
 
   	addi	s2,	s2,	2
-  	addi	s1,	s1,	-4
   	
   	mv	s9,	t1
   	mv	s10,	t2
@@ -124,7 +124,6 @@ set_direction:
   	mv	s7,	t1
   	
   	addi	s2,	s2,	2
-  	addi	s1,	s1,	-2
   	j	read_loop
 
 move_args:
@@ -135,7 +134,6 @@ move_args:
   	add	t1,	t1,	t0	# get distance value
   	
   	addi	s2,	s2,	2
-  	addi	s1,	s1,	-2
   	
   	mv	s11,	t1
   	addi	s11,	s11,	1
@@ -198,7 +196,6 @@ set_pen_state:
   	mv	s8,	t1
   	
   	addi	s2,	s2,	2
-  	addi	s1,	s1,	-2
  	j	read_loop
 
 read_bmp:
@@ -305,7 +302,6 @@ set_pixel:
 	sb	s4,	2(t0)	
 	jr	ra
 
-	
 error:
  	li	a7,	4
  	la	a0,	err_msg
@@ -320,4 +316,3 @@ create_bmp:
 exit:
 	li	a7,	10
 	ecall
-
