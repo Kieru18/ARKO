@@ -19,6 +19,8 @@ global get_blue
 set_pixel:
 	push ebp
 	mov	ebp, esp
+	push esi
+	push edi
  
 	mov esi, [ebp + 8]		;colors
 	mov edi, [ebp + 12]		;bmp
@@ -27,6 +29,8 @@ set_pixel:
 	mov ecx, 3
 	repnz movsb
 
+	pop edi
+	pop esi
 	mov esp, ebp
 	pop ebp
 	ret
